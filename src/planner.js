@@ -110,7 +110,7 @@ function deferralReason(o, fails, ctx) {
   const counts = {};
   for (const f of fails) counts[f] = (counts[f] || 0) + 1;
   const top = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([k]) => REASONS[k]);
-  return `All ${compatible.length} ${need === 'vehicle' ? 'compatible vehicles' : `${need}s`} at ${o.depot} are already committed to higher-priority orders (limited by ${top.join(' and ') || 'capacity'}).`;
+  return `${compatible.length === 1 ? `The only ${need}` : `All ${compatible.length} ${need === 'vehicle' ? 'compatible vehicles' : `${need}s`}`} at ${o.depot} ${compatible.length === 1 ? 'is' : 'are'} already committed to higher-priority orders (limited by ${top.join(' and ') || 'capacity'}).`;
 }
 
 // ctx: { vehicles (available, with fuel_remaining_l), workshop, travel, allowance }

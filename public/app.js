@@ -20,6 +20,7 @@ function logout() { store.del('wp_token'); store.del('wp_user'); S.token = null;
 const fmtTime = (iso) => iso ? new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
 const brandTag = (b) => `<span class="tag brand-${b}">${b}</span>`;
 const tempTag = (t) => t === 'chilled' ? '<span class="pill info">❄ chilled</span>' : '<span class="pill">dry</span>';
+const safeImg = (u) => (/^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(u || '') ? u : '');
 const pct = (a, b) => Math.min(100, Math.round((a / b) * 100));
 const meter = (label, a, b, unit) => { const p = pct(a, b); return `<div class="meter"><span>${label}</span><div class="bar ${p > 95 ? 'full' : p > 80 ? 'hot' : ''}"><i style="width:${p}%"></i></div><span class="mono">${a.toFixed(unit === 'm³' ? 1 : 0)}/${b} ${unit}</span></div>`; };
 const STATUS = {
@@ -56,7 +57,7 @@ setInterval(syncOutbox, 15000);
 function shell(content, { narrow = false } = {}) {
   const u = S.user;
   return `<header class="top"><div class="logo"><i></i>Waypoint <span style="font-weight:400;opacity:.8">Dispatch</span></div>
-    <span class="pill" id="runpill"></span>
+    <span class="pill" id="runpill" style="${u.role === 'loader' || u.role === 'driver' ? 'display:none' : ''}"></span>
     <div class="who"><span class="name">${esc(u.name)}</span><span class="pill">${{ dispatcher: 'Dispatcher', loader: 'Loader', driver: 'Driver', store: 'Store manager' }[u.role]}</span><button id="logout">Sign out</button></div></header>
     <main class="${narrow ? 'narrow' : ''}">${content}</main>`;
 }
@@ -408,7 +409,7 @@ async function renderStore() {
   $('#app').querySelectorAll('[data-pod]').forEach((b) => b.onclick = async () => {
     const p = await api(`/api/stops/${b.dataset.pod}/pod`); const dlg = $('#dlg');
     dlg.innerHTML = `<div class="stack"><h3>Proof of delivery · ${p.outlet_id}</h3><div>Received by <b>${esc(p.pod_name || '–')}</b> at ${fmtTime(p.completed_at)}${p.recorded_offline ? ' (recorded offline, synced later)' : ''}</div>
-      ${p.pod_signature ? `<img src="${p.pod_signature}" alt="signature" style="width:100%;border:1px solid var(--line);border-radius:8px">` : '<span class="muted">No signature</span>'}${p.pod_photo ? `<img src="${p.pod_photo}" alt="delivery photo" style="width:100%;border-radius:8px">` : ''}${p.note ? `<div>Note: ${esc(p.note)}</div>` : ''}<button class="btn" id="dclose">Close</button></div>`;
+      ${p.pod_signature ? `<img src="${safeImg(p.pod_signature)}" alt="signature" style="width:100%;border:1px solid var(--line);border-radius:8px">` : '<span class="muted">No signature</span>'}${p.pod_photo ? `<img src="${safeImg(p.pod_photo)}" alt="delivery photo" style="width:100%;border-radius:8px">` : ''}${p.note ? `<div>Note: ${esc(p.note)}</div>` : ''}<button class="btn" id="dclose">Close</button></div>`;
     dlg.showModal(); $('#dclose').onclick = () => dlg.close();
   });
   S.timer = setInterval(() => { if (S.user?.role === 'store' && !document.activeElement?.matches('input,select,textarea') && !$('#dlg')?.open) renderStore(); }, 15000);

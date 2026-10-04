@@ -354,6 +354,8 @@ function applyDriverEvent(user, ev) {
     if (!['delivered', 'partial', 'failed'].includes(p.outcome)) throw new Error('Unknown delivery outcome.');
     if (['delivered', 'partial', 'failed'].includes(stop.status)) throw new Error(`Stop ${stop.outlet_id} was already recorded as ${stop.status}.`);
     if (p.outcome !== 'failed' && !String(p.pod_name || '').trim()) throw new Error('Proof of delivery needs the receiver name.');
+    const IMG = /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/;
+    if ((p.signature && !IMG.test(p.signature)) || (p.photo && !IMG.test(p.photo))) throw new Error('Proof-of-delivery images must be PNG or JPEG.');
     run('UPDATE stops SET status = ?, completed_at = ?, pod_name = ?, pod_signature = ?, pod_photo = ?, note = ?, recorded_offline = ? WHERE id = ?',
       p.outcome, ev.client_at || now(), p.pod_name || null, p.signature || null, p.photo || null, p.note || null, ev.offline ? 1 : 0, stop.id);
     for (const o of all('SELECT * FROM orders WHERE trip_id = ? AND outlet_id = ?', trip.id, stop.outlet_id)) {
