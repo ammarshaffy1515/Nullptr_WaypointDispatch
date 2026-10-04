@@ -1,0 +1,13 @@
+{
+  "name": "waypoint-dispatch",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node --no-warnings src/server.js",
+    "seed": "node --no-warnings -e \"import('./src/db.js').then(m=>console.log(m.seed()))\"",
+    "test": "node --no-warnings --test test/*.test.js"
+  },
+  "dependencies": { "express": "^4.21.2" }
+}

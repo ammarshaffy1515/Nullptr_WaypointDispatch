@@ -1,0 +1,17 @@
+# `docker compose up` starts the full stack: the API + web app and its embedded
+# SQLite database, seeded on first boot from the shared datasets in ./data.
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DB_PATH: /app/var/waypoint.db
+    volumes:
+      - waypoint-db:/app/var
+    restart: unless-stopped
+volumes:
+  waypoint-db:
