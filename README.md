@@ -2,7 +2,7 @@
 
 One delivery system for Waypoint Group's three brands. It covers store ordering, dispatcher planning and allocation, dock loading, offline-first driver delivery with proof of delivery, and store receipt. It is one responsive web app with four role views.
 
-- **Live:** _add Render URL here_
+- **Live:** https://declared-give-lindsay-rolled.trycloudflare.com
 - **Demo video:** _add YouTube link here_
 - **Docs:** [architecture](docs/architecture.md) · [data model](docs/data-model.md) · [AI tool disclosure](docs/ai-disclosure.md)
 
